@@ -4,7 +4,7 @@ services:
     image: composer:latest
     volumes:
       - ./:/app
-    command: bash -c "php -v && composer global require hirak/prestissimo --no-plugins --no-scripts && composer install --ignore-platform-reqs && composer update --ignore-platform-reqs"
+    command: bash -c "php -v && composer global require hirak/prestissimo --no-plugins --no-scripts && composer install --ignore-platform-reqs && composer update --ignore-platform-reqs && composer dumpautoload -o"
     logging:
       driver: "json-file"
       options:

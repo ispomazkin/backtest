@@ -53,7 +53,7 @@ RUN apt-get install -y \
 WORKDIR /app
 
 ADD . /app
-
+#
 #RUN curl -sS https://getcomposer.org/installer | php && mv composer.phar /usr/local/bin/composer
 #RUN composer install --prefer-dist --no-autoloader && rm -rf /root/.composer
 #RUN composer dump-autoload --optimize
