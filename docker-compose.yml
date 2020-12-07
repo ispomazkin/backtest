@@ -1,0 +1,52 @@
+version: '3.7'
+services:
+  php_composer:
+    image: composer:latest
+    volumes:
+      - ./:/app
+    command: bash -c "php -v && composer global require hirak/prestissimo --no-plugins --no-scripts && composer install --ignore-platform-reqs && composer update --ignore-platform-reqs"
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "100k"
+        max-file: "1"
+  php:
+    build:
+      dockerfile: .docker/${ENV}/Dockerfile
+      context: ./
+      args:
+        ENV: ${ENV}
+    restart: always
+    entrypoint: "sh .docker/${ENV}/queue/start.sh ${WORKERS_COUNT}"
+    depends_on:
+      - rabbitmq
+    networks:
+      - backend
+    volumes:
+      - ./:/app
+      - ./.docker/${ENV}/php/php.ini:/usr/local/etc/php/conf.d/php.ini
+      - ./.docker/${ENV}/php/php-cli.ini:/usr/local/etc/php/conf.d/php-cli.ini
+      - ./.docker/${ENV}/php/opcache.ini:/usr/local/etc/php/conf.d/opcache.ini
+      - /app/vendor
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "20m"
+        max-file: "5"
+
+  rabbitmq:
+    image: 'rabbitmq:3-management'
+    environment:
+      - RABBITMQ_DEFAULT_USER=${RABBITMQ_USER}
+      - RABBITMQ_DEFAULT_PASS=${RABBITMQ_PASS}
+    networks:
+      - backend
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "100k"
+        max-file: "1"
+
+networks:
+  backend:
+
